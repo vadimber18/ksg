@@ -57,3 +57,23 @@ Installation
 * `swagger` available on `127.0.0.1:8000`, but you can always use Insomnia or such thing to test API.
 * `aiohttp-admin` available on `127.0.0.1/admin` `user:admin password:admin_pass`
 * main non-api available views on `127.0.0.1`
+
+TODO list
+------------
+* cleanup
+* aiologstash logs (w elk image)
+* custom exceptions
+* raw sql
+* several responses (w data/files?)
+* permissions (superusers?)
+* gitlab cron tests (mocks?)
+* redis (?)
+* files (upload commentary photos)
+* cron-tasks (send weekly top for fav user activity categories)
+* load-balance
+* improve swagger (nullable, inher etc)
+* insomnia config
+* host
+* git things
+* cleanup
+
