@@ -1,0 +1,6 @@
+ [{"id":1,"name":"Soups","code":"SOUPS"},       
+  {"id":2,"name":"Main","code":"MAIN"},         
+  {"id":3,"name":"Salads","code":"SALADS"},     
+  {"id":4,"name":"Desserts","code":"DESSERTS"}, 
+  {"id":5,"name":"Other","code":"OTHER"}]
+

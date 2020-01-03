@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js">
+    </script>
+    <script src="/static/js/ws_chat.js">
+    </script>
+    <link rel="stylesheet" type="text/css"
+          href="/static/style.css" />
+    <title>{{title}}</title>
+    {% endblock %}
+  </head>
+  <body>
+    <h1>{{title}}</h1>
+    <div>
+      {% block content %}
+      {% endblock %}
+    </div>
+    <b>Discuss recipe in chat with others!</b>
+    <div>
+      <button id="connect">Connect</button>&nbsp;|&nbsp;Status:
+      <span id="name">UNKNOWN</span>
+      <span id="status">disconnected</span>
+    </div>
+    <div id="log">
+    </div>
+    <form id="chatform" onsubmit="return false;">
+      <input id="text" type="text" />
+      <input id="send" type="button" value="Send" disabled/>
+    </form>
+  </body>
+</html>

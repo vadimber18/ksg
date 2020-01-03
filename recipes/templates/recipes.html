@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% set title = "Recipes" %}
+
+{% block content %}
+{% if count %}
+    We have {{ count }} recipes!
+{% endif %}
+{% if recipes %}
+    {% for recipe in recipes %}
+    <li><a href="{{ recipe.recipe_url }}">{{ recipe.recipe_title }} - {{ recipe.recipe_id }}</a></li>
+    <li><a href="{{ url('recipe_detail_nonapi', recipe_id=recipe.recipe_id) }}">Detail</a></li>
+    <b>Publication date:</b> {{ recipe.recipe_pub_date }}
+    <br><b>Description:</b> {{ recipe.recipe_descr }}
+    <br><b>Source name:</b> {{ recipe.source_name }} <b>Category name:</b> {{ recipe.category_name }}
+    <br><img class="small_image" src="{{ recipe.recipe_main_image }}"/>
+    <br><b>Prepare time:</b> {{ recipe.prep_time }}
+    <br><b>Ingredient list:</b>
+
+    <ul>
+    {% if recipe.ingredients %}
+        {% for ingredient in recipe.ingredients %}
+            <li> {{ ingredient.name }} - {{ ingredient.qty }} </li>
+        {% endfor %}
+    {%  endif %}
+    </ul>
+    {% endfor %}
+{% else %}
+    <p>No recipes are available.</p>
+{% endif %}
+{% endblock %}

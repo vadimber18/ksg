@@ -1,0 +1,25 @@
+# Main
+aiohttp
+aiopg[sa]
+aiohttp-cors
+aiohttp-jinja2
+#aiohttp-admin
+git+https://github.com/aio-libs/aiohttp_admin@master
+trafaret-config
+
+python-slugify==1.2.5
+passlib
+PyJWT==1.4.0
+faker
+
+# For testing
+pytest
+pytest-aiohttp
+flake8
+
+# For scraping
+bs4==0.0.1
+selenium==3.141.0
+dateparser==0.7.0
+user-agent==0.1.9
+lxml==4.2.4

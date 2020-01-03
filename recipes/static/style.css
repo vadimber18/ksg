@@ -1,0 +1,15 @@
+li a {
+    color: green;
+}
+
+img.small_image {
+  width: 300px;
+  height: auto;
+}
+
+#log {
+    width: 30em;
+    height: 15em;
+    overflow: auto;
+    border: 1px solid black;
+}

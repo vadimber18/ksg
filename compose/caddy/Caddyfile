@@ -1,0 +1,10 @@
+{$DOMAIN_NAME}:80 {
+    proxy / aio:8080 {
+        transparent
+        except /static
+    }
+    root /var/www
+    log stdout
+    errors stdout
+    gzip
+}

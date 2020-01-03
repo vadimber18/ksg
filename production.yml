@@ -1,0 +1,44 @@
+version: '2'
+
+services:
+  aio: &aio
+    build:
+      context: .
+      dockerfile: ./compose/aio/Dockerfile
+    image: recipes_prod_aio
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env/.aio
+      - ./.env/.postgres
+    command: /start
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - ./.env/.postgres
+
+  caddy:
+    build:
+      context: .
+      dockerfile: ./compose/caddy/Dockerfile
+    image: recipes_prod_caddy
+    depends_on:
+      - aio
+    volumes:
+      - ./recipes/static:/var/www/static
+    env_file:
+      - ./.env/.caddy
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+
+  swagger:
+    build:
+      context: .
+      dockerfile: ./compose/swagger/Dockerfile
+    ports:
+      - "8000:8080"
+    image: recipes_prod_swagger
+    env_file:
+      - ./.env/.swagger
