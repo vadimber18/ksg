@@ -19,39 +19,37 @@ TEST_CONFIG = TEST_CONFIG
 TEST_DB_URL = DSN.format(**TEST_CONFIG['postgres'])
 test_engine = create_engine(TEST_DB_URL)
 
-FIXTURES_PATH = BASE_DIR / 'tests' / 'json_fixtures'
+FIXTURES_PATH = f'{BASE_DIR}/tests/json_fixtures'
 
 
 def setup_db(config):
-
     db_name = config['database']
     db_user = config['user']
     db_pass = config['password']
 
     conn = admin_engine.connect()
-    conn.execute("DROP DATABASE IF EXISTS %s" % db_name)
-    conn.execute("DROP ROLE IF EXISTS %s" % db_user)
-    conn.execute("CREATE USER %s WITH PASSWORD '%s'" % (db_user, db_pass))
-    conn.execute("CREATE DATABASE %s ENCODING 'UTF8'" % db_name)
-    conn.execute("GRANT ALL PRIVILEGES ON DATABASE %s TO %s" %
-                 (db_name, db_user))
+    conn.execute(f'DROP DATABASE IF EXISTS {db_name}')
+    conn.execute(f'DROP ROLE IF EXISTS {db_user}')
+    conn.execute(f"CREATE USER {db_user} WITH PASSWORD '{db_pass}'")
+    conn.execute(f"CREATE DATABASE {db_name} ENCODING 'UTF8'")
+    conn.execute(f'GRANT ALL PRIVILEGES ON DATABASE {db_name} TO {db_user}')
     conn.close()
 
 
 def teardown_db(config):
-
     db_name = config['database']
     db_user = config['user']
 
     conn = admin_engine.connect()
-    conn.execute("""
+    conn.execute(f"""
       SELECT pg_terminate_backend(pg_stat_activity.pid)
       FROM pg_stat_activity
-      WHERE pg_stat_activity.datname = '%s'
-        AND pid <> pg_backend_pid();""" % db_name)
-    conn.execute("DROP DATABASE IF EXISTS %s" % db_name)
-    conn.execute("DROP ROLE IF EXISTS %s" % db_user)
+      WHERE pg_stat_activity.datname = '{db_name}'
+        AND pid <> pg_backend_pid();""")
+    conn.execute(f'DROP DATABASE IF EXISTS {db_name}')
+    conn.execute(f'DROP ROLE IF EXISTS {db_user}')
     conn.close()
+
 
 def create_tables(engine=test_engine):
     meta = MetaData()
@@ -63,12 +61,18 @@ def drop_tables(engine=test_engine):
     meta.drop_all(bind=engine, tables=[users, source, category, ingredient, ingredient_item, recipe, comment, vote])
 
 
-def insert_from_fixtures(conn):
-    fixture_list = ['source.json', 'recipe.json', 'ingredient.json', 'ingredient_item.json']
-    for filename in fixture_list:
-        with open(FIXTURES_PATH / filename) as f:
+def insert_from_fixtures(conn, fixture_filenames):
+    for filename in fixture_filenames:
+        table = eval(filename.split('.')[0])
+        with open(f'{FIXTURES_PATH}/{filename}') as f:
             data = json.load(f)
         for record in data:
+            # make sure there is no such record already
+            query = table.select().where(table.c.id == record['id'])
+            cursor = conn.execute(query)
+            real_record = cursor.fetchone()
+            if real_record:
+                continue
             if filename == 'recipe.json':
                 if record['pub_date']:
                     record['pub_date'] = datetime.strptime(record['pub_date'], '%Y-%m-%d')
@@ -77,22 +81,18 @@ def insert_from_fixtures(conn):
                                                     minutes=int(record['prep_time'].split(':')[0]),
                                                     seconds=int(record['prep_time'].split(':')[0])
                                                     )
-            conn.execute(eval(filename.split('.')[0]).insert(), record)
+            conn.execute(table.insert(), record)
 
 
 def sample_data(engine=test_engine):
     conn = engine.connect()
 
-    conn.execute(category.insert(), [
-        {'name': 'Soups', 'code': 'SOUPS'},
-        {'name': 'Main', 'code': 'MAIN'},
-        {'name': 'Salads', 'code': 'SALADS'},
-        {'name': 'Desserts', 'code': 'DESSERTS'},
-        {'name': 'Other', 'code': 'OTHER'},
-    ])
+    # we always need categories
+    insert_from_fixtures(conn, ['category.json'])
 
     if engine==test_engine:
-        insert_from_fixtures(conn)
+        fixture_filenames = ['source.json', 'recipe.json', 'ingredient.json', 'ingredient_item.json']
+        insert_from_fixtures(conn, fixture_filenames)
 
     conn.close()
 

@@ -16,7 +16,7 @@ from recipes.helpers import shutdown_ws
 async def init_app(testing=False):
     app = web.Application()
 
-    app['websockets'] = {} #TODO
+    app['websockets'] = {} # TODO do we actually need em?
 
     app['config'] = TEST_CONFIG if testing else CONFIG
 

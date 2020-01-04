@@ -33,7 +33,7 @@ async def test_register(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 200
+    assert response.status == 201
 
     response = await cli.post(
         '/api/register',
@@ -51,7 +51,7 @@ async def test_register(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user_two', 'password': 'qwerty', 'email': 'test_two@test.test'}
     )
-    assert response.status == 200
+    assert response.status == 201
 
 
 async def test_login(cli, tables_and_data):
@@ -77,7 +77,7 @@ async def test_login(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 200
+    assert response.status == 201
 
     response = await cli.post(
         '/api/login',
@@ -103,7 +103,7 @@ async def test_vote_recipe(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 200
+    assert response.status == 201
 
     response = await cli.post(
         '/api/login',
@@ -155,7 +155,7 @@ async def test_comment_recipe(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 200
+    assert response.status == 201
 
     response = await cli.post(
         '/api/login',
@@ -306,7 +306,7 @@ async def test_recipes(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.post(
         '/api/login',
         json={'username': 'test_user', 'password': 'qwerty'}
@@ -333,7 +333,7 @@ async def test_recipes(cli, tables_and_data):
         assert count_record[0] == response_data['count']
 
     response = await cli.get('/api/recipes', headers = {'authorization_jwt': token[:-1]})
-    assert response.status == 400 # bad token
+    assert response.status == 401 # bad token
 
     # checks 'likes' incrementing and 'liked' field for user after voting
     response = await cli.post(
@@ -433,7 +433,7 @@ async def test_favored(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.post(
         '/api/login',
         json={'username': 'test_user', 'password': 'qwerty'}
@@ -498,7 +498,7 @@ async def test_recipe_detail(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.post(
         '/api/login',
         json={'username': 'test_user', 'password': 'qwerty'}

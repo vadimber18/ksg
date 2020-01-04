@@ -110,7 +110,7 @@ async def get_pure_recipe_list(conn, limit, offset, where_list, usr, many, favor
     ''' gets number of value=True votes to likes field '''
     ''' gets liked=True if user liked for recipe '''
 
-    # we getting only liked recipes if favored view otherwise all
+    # we fetch only liked recipes if favored is true otherwise full list
     fetch_all_recipes = False if favored else True
 
     if usr:
@@ -121,7 +121,7 @@ async def get_pure_recipe_list(conn, limit, offset, where_list, usr, many, favor
                 recipe.join(source, source.c.id == recipe.c.source_id)
                 .join(category, category.c.id == recipe.c.category_id)
                 .join(alias1, sa.and_(alias1.c.recipe_id == recipe.c.id, alias1.c.value == True), isouter=fetch_all_recipes)
-                .join(alias2, sa.and_(alias2.c.recipe_id == recipe.c.id, alias2.c.value == True, alias2.c.user_id==usr['id']), isouter=fetch_all_recipes)
+                .join(alias2, sa.and_(alias2.c.recipe_id == recipe.c.id, alias2.c.value == True, alias2.c.user_id == usr['id']), isouter=fetch_all_recipes)
             ).group_by(recipe.c.id, source.c.id, category.c.id, alias2.c.value)
     else:
         query = sa.select([recipe, source, category, sa.func.count(vote.c.recipe_id).label('likes')], use_labels=True).\
@@ -130,7 +130,6 @@ async def get_pure_recipe_list(conn, limit, offset, where_list, usr, many, favor
                 .join(category, category.c.id == recipe.c.category_id)
                 .join(vote, sa.and_(vote.c.recipe_id == recipe.c.id, vote.c.value == True), isouter=True)
             ).group_by(recipe.c.id, source.c.id, category.c.id)
-
 
     for where in where_list:
         query = query.where(where)
@@ -194,6 +193,7 @@ async def vote_recipe(dbengine, recipe_id, user):
                 .where(vote.c.recipe_id == recipe_id)
                 .where(vote.c.user_id == user['id']))
         vote_record = await cursor.fetchone()
+        # creates new vote record if there is first vote
         if not vote_record:
             cursor = await conn.execute(
                 vote.insert()
@@ -212,6 +212,7 @@ async def vote_recipe(dbengine, recipe_id, user):
                     .values(value=value)
                     .returning(vote.c.id))
             vote_record = await cursor.fetchone()
+            cursor.close()
 
         if not vote_record:
             raise RecordNotFound('Error while creating new vote')
@@ -237,6 +238,6 @@ async def register(dbengine, data):
         password_hash = sha256_crypt.hash(data['password'])
         query = users.insert().values(username=data['username'], passwd=password_hash, email=data['email']).returning(users.c.id)
         cursor = await conn.execute(query)
-        user_record = cursor.fetchone()
+        user_record = await cursor.fetchone()
         if not user_record:
             raise RecordNotFound('There were an error with creating new user')

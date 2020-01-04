@@ -4,3 +4,4 @@ class RecordNotFound(Exception):
 
 class BadRequest(Exception):
     """Bad request"""
+

@@ -50,9 +50,9 @@ App contains tests for API handlers using aiohttp-pytest. some of them load data
 Installation
 ------------
 
-* `docker-compose -f production.yml build`
-* `docker-compose -f production.yml up`
-* to run tests: `docker-compose -f local.yml run aio pytest tests`
+* `make build_prod`
+* `make run_prod`
+* to run tests: `make test`
 * go to `127.0.0.1/collect` to collect recipes
 * `swagger` available on `127.0.0.1:8000`, but you can always use Insomnia or such thing to test API.
 * `aiohttp-admin` available on `127.0.0.1/admin` `user:admin password:admin_pass`
@@ -76,4 +76,5 @@ TODO list
 * host
 * git things
 * cleanup
+* collect for all users API - ordinary user can collect every N hours (last time stored in redis?) and superuser can do it always
 

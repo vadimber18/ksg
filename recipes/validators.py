@@ -3,17 +3,15 @@ from passlib.hash import sha256_crypt
 from .exceptions import BadRequest
 from .db_tables import recipe, users
 
-from typing import Union
-
 
 def validate_comment(data):
     if 'body' not in data:
-        raise BadRequest('"body" is required field')
+        raise BadRequest('Missed required param "body"')
 
 
 async def validate_recipe(conn, recipe_id):
     cursor = await conn.execute(
-        recipe.select()
+            recipe.select()
             .where(recipe.c.id == recipe_id))
     recipe_record = await cursor.fetchone()
     if not recipe_record:
@@ -57,6 +55,7 @@ async def validate_register(conn, data):
 
     email = data['email']
 
+    # email format dummy validation
     if '@' not in email:
         raise BadRequest('Wrong email format')
 

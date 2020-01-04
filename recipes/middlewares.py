@@ -15,7 +15,6 @@ async def handle_500(request):
 
 
 def create_error_middleware(overrides):
-
     @web.middleware
     async def error_middleware(request, handler):
 
@@ -37,6 +36,7 @@ def create_error_middleware(overrides):
 
     return error_middleware
 
+
 @web.middleware
 async def auth_middleware(request, handler):
     request.user = None
@@ -48,7 +48,7 @@ async def auth_middleware(request, handler):
             payload = jwt.decode(jwt_token, JWT_SECRET,
                                     algorithms=[JWT_ALGORITHM])
         except (jwt.DecodeError, jwt.ExpiredSignatureError):
-            return web.json_response({'message': 'Token is invalid'}, status=400)
+            return web.json_response({'message': 'Token is invalid'}, status=web.HTTPUnauthorized.status_code)
 
         async with request.app['db'].acquire() as conn:
             query = users.select().where(users.c.id == payload['user_id'])
@@ -65,6 +65,7 @@ def setup_middlewares(app):
     })
     app.middlewares.append(error_middleware)
     app.middlewares.append(auth_middleware)
+
 
 def login_required(func):
     async def wrapper(request):

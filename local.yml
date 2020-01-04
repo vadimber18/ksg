@@ -21,6 +21,9 @@ services:
     image: postgres:latest
     env_file:
       - ./.env/.postgres
+    ports:
+      - "5431:5432"
+      # TODO
 
   swagger:
     build:

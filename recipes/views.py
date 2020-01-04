@@ -16,7 +16,7 @@ async def register(request):
         await db.register(request.app['db'], data)
     except Exception as e:
         return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
-    return web.json_response({'success': True})
+    return web.Response(status=web.HTTPCreated.status_code)
 
 
 async def login(request):
@@ -36,7 +36,7 @@ async def recipes(request):
         response = prepare_recipes_response(recipes, count, request.rel_url)
         return web.json_response(response, dumps=json_str_dumps)
     except Exception as e:
-        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
+        return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
 @login_required
@@ -47,7 +47,7 @@ async def favored(request):
         response = prepare_recipes_response(recipes, count, request.rel_url)
         return web.json_response(response, dumps=json_str_dumps)
     except Exception as e:
-        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
+        return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
 async def recipe_detail(request):
@@ -55,13 +55,12 @@ async def recipe_detail(request):
     recipe_id = request.match_info['recipe_id']
     try:
         recipe = await db.get_recipe_list(request.app['db'],
-                                          pagination=None,
                                           filters=recipe_id,
                                           usr=request.user,
                                           many=False)
         return web.json_response(recipe, dumps=json_str_dumps)
     except Exception as e:
-        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
+        return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
 @login_required
@@ -72,7 +71,7 @@ async def vote_recipe(request):
         await db.vote_recipe(request.app['db'], recipe_id, request.user)
         return web.json_response({'success': True})
     except Exception as e:
-        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
+        return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
 @login_required
@@ -84,7 +83,7 @@ async def comment_recipe(request):
         await db.comment_recipe(request.app['db'], data, recipe_id, request.user)
         return web.json_response({'success': True})
     except Exception as e:
-        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
+        return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
 @aiohttp_jinja2.template('recipes.html')

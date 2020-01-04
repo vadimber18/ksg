@@ -5,7 +5,7 @@ from aiohttp_admin.contrib import models, Schema
 from aiohttp_admin.backends.sa import PGResource
 from aiohttp_admin.security import DummyAuthPolicy, DummyTokenIdentityPolicy
 
-from recipes.db_tables import users, category, source, ingredient, ingredient_item, recipe, comment, vote
+from recipes.db_tables import users, category, source, ingredient, ingredient_item, comment, vote
 
 
 schema = Schema()
@@ -35,6 +35,7 @@ class Users(models.ModelAdmin):
     class Meta:
         resource_type = PGResource
         table = users
+
 
 @schema.register
 class Source(models.ModelAdmin):

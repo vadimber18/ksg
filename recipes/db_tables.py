@@ -29,7 +29,7 @@ category = Table(
 
     Column('id', Integer, primary_key=True),
     Column('name', String(120), nullable=False),
-    Column('code', String(120))
+    Column('code', String(120), unique=True)
 )
 
 ingredient = Table(
