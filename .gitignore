@@ -3,3 +3,5 @@
 
 __pycache__
 *.pyc
+
+compose/elk/data

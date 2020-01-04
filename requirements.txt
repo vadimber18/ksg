@@ -3,6 +3,8 @@ aiohttp
 aiopg[sa]
 aiohttp-cors
 aiohttp-jinja2
+aiologstash
+aioredis
 #aiohttp-admin
 git+https://github.com/aio-libs/aiohttp_admin@master
 

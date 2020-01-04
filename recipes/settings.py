@@ -24,6 +24,14 @@ CONFIG = {
         'user': os.environ.get('AIOHTTPADMIN_USER', 'admin'),
         'password': os.environ.get('AIOHTTPADMIN_PASSWORD', 'admin'),
     },
+    'logstash':{
+        'server': os.environ.get('LOGSTASH_SERVER', 'elk'),
+        'port': os.environ.get('LOGSTASH_PORT', '5040'),
+    },
+    'redis':{
+        'server': os.environ.get('REDIS_SERVER', 'redis'),
+        'port': os.environ.get('REDIS_PORT', '6379'),
+    },
     'host': os.environ.get('AIO_HOST', '127.0.0.1'),
     'port': int(os.environ.get('AIO_PORT', 8080)),
     'debug': bool(os.environ.get('DEBUG', False)),

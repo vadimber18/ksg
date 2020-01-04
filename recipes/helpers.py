@@ -1,4 +1,9 @@
 from datetime import datetime, timedelta
+import logging
+import asyncio
+
+import aioredis
+from aiologstash import create_tcp_handler
 
 from .db_tables import recipe
 
@@ -89,3 +94,46 @@ def make_where_list_recipes(filters, many=True):
                 to_date = datetime.strptime(to, '%d-%m-%Y')
                 where_list.append(recipe.c.pub_date <= to_date)
         return where_list
+
+
+async def init_logstash(app):
+    conf = app['config']['logstash']
+    log_handler = None
+    logger = logging.getLogger('ksg')
+    logger.setLevel(logging.INFO)
+    await asyncio.sleep(60)  # wait elk container started
+    try:
+        print(f'creating tcp handler on: {conf}')
+        log_handler = await create_tcp_handler(conf['server'], conf['port'])
+    except Exception as e:
+        print('#'*20 + f'Cant connect to logstash: {e}')
+    else:
+        logger.addHandler(log_handler)
+    app['logstash'] = logger
+
+    yield
+
+    if log_handler:
+        log_handler.close()
+
+
+def log_exception(app, e):
+    log_string(app, f'Exception: {str(e)}')
+
+
+def log_string(app, string, extra=None):
+    testing = app.get('testing')
+    if not testing:
+        app['logstash'].info(string, extra=extra)
+
+
+async def init_redis(app):
+    conf = app['config']['redis']
+    pool = await aioredis.create_redis_pool(address=f'redis://{conf["server"]}:{conf["port"]}',
+                                            minsize=10,
+                                            maxsize=20,
+                                            timeout=10)
+    app['redis'] = pool
+    yield
+    pool.close()
+    await pool.wait_closed()

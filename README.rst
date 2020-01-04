@@ -47,6 +47,12 @@ tests
 
 App contains tests for API handlers using aiohttp-pytest. some of them load data from json-fixtures
 
+elk
+^^^^^
+
+run `sudo sysctl -w vm.max_map_count=262144` for elk started ok
+
+
 Installation
 ------------
 
@@ -60,21 +66,22 @@ Installation
 
 TODO list
 ------------
-* cleanup
-* aiologstash logs (w elk image)
-* custom exceptions
-* raw sql
-* several responses (w data/files?)
-* permissions (superusers?)
-* gitlab cron tests (mocks?)
+* maybe copy to src folder not to copy potentially big volumes?
+* aiologstash logs (w elk image)  # TODO
+
+* custom exceptions  # TODO
+* collect for all users API - ordinary user can collect every N hours (last time stored in redis?) and superuser can do it always
 * redis (?)
+* permissions (superusers?)
+
+* raw sql
+* gitlab cron tests (mocks?)
 * files (upload commentary photos)
-* cron-tasks (send weekly top for fav user activity categories)
+* cron-tasks (emails?) (send weekly top for fav user activity categories)
 * load-balance
 * improve swagger (nullable, inher etc)
 * insomnia config
 * host
 * git things
 * cleanup
-* collect for all users API - ordinary user can collect every N hours (last time stored in redis?) and superuser can do it always
 

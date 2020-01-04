@@ -5,28 +5,39 @@ from aiohttp import web
 from scrape import collect_recipes
 
 from . import db
-from .helpers import prepare_filter_parameters, prepare_recipes_response
+from .exceptions import BadRequest_Important, AppException
+from .helpers import prepare_filter_parameters, prepare_recipes_response, log_string, log_exception
 from .utils import json_str_dumps, get_random_name
-from .middlewares import login_required # TODO need another location
+from .middlewares import login_required # TODO find another location
 
 
 async def register(request):
     data = await request.json()
     try:
         await db.register(request.app['db'], data)
-    except Exception as e:
+        log_string(request.app, 'new registration!', extra={'username': data['username']})
+        return web.Response(status=web.HTTPCreated.status_code)
+    except AppException as e:
         return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
-    return web.Response(status=web.HTTPCreated.status_code)
+    except Exception as e:
+        log_exception(request.app, e)
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
 
 
 async def login(request):
     data = await request.json()
     try:
         token = await db.login(request.app['db'], data, request.app['config']['jwt'])
-    except Exception as e:
+        log_string(request.app, 'new auth!', extra={'username': data['username']})
+        return web.json_response({'token': token.decode('utf-8')})
+    except AppException as e:
         return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
-
-    return web.json_response({'token': token.decode('utf-8')})
+    except BadRequest_Important as e:
+        log_string(request.app, f'auth attempt: {e}', extra={'username': data['username']})
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
+    except Exception as e:
+        log_exception(request.app, e)
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
 
 
 async def recipes(request):
@@ -35,7 +46,10 @@ async def recipes(request):
         recipes, count = await db.get_recipe_list(request.app['db'], pagination, filters, request.user)
         response = prepare_recipes_response(recipes, count, request.rel_url)
         return web.json_response(response, dumps=json_str_dumps)
+    except AppException as e:
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
     except Exception as e:
+        log_exception(request.app, e)
         return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
@@ -46,7 +60,10 @@ async def favored(request):
         recipes, count = await db.get_recipe_list(request.app['db'], pagination, filters, request.user, favored=True)
         response = prepare_recipes_response(recipes, count, request.rel_url)
         return web.json_response(response, dumps=json_str_dumps)
+    except AppException as e:
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
     except Exception as e:
+        log_exception(request.app, e)
         return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
@@ -59,7 +76,10 @@ async def recipe_detail(request):
                                           usr=request.user,
                                           many=False)
         return web.json_response(recipe, dumps=json_str_dumps)
+    except AppException as e:
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
     except Exception as e:
+        log_exception(request.app, e)
         return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
@@ -70,7 +90,10 @@ async def vote_recipe(request):
     try:
         await db.vote_recipe(request.app['db'], recipe_id, request.user)
         return web.json_response({'success': True})
+    except AppException as e:
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
     except Exception as e:
+        log_exception(request.app, e)
         return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
@@ -81,8 +104,14 @@ async def comment_recipe(request):
     recipe_id = request.match_info['recipe_id']
     try:
         await db.comment_recipe(request.app['db'], data, recipe_id, request.user)
+        log_string(request.app, 'new comment!', extra={'user': request.user['id'],
+                                                       'recipe': recipe_id,
+                                                       'body': data['body']})
         return web.json_response({'success': True})
+    except AppException as e:
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
     except Exception as e:
+        log_exception(request.app, e)
         return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 

@@ -1,6 +1,6 @@
 from passlib.hash import sha256_crypt
 
-from .exceptions import BadRequest
+from .exceptions import BadRequest, BadRequest_Important
 from .db_tables import recipe, users
 
 
@@ -35,7 +35,7 @@ async def check_credentials(conn, username, password):
         result = sha256_crypt.verify(password, hash)
         if result:
             return user_record
-    raise BadRequest('Wrong credentials')
+    raise BadRequest_Important('Wrong credentials')
 
 
 async def validate_register(conn, data):

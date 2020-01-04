@@ -10,7 +10,7 @@ from recipes.middlewares import setup_middlewares
 from recipes.routes import setup_routes, setup_cors
 from recipes.settings import CONFIG, TEST_CONFIG
 from recipes.admin import setup_admin
-from recipes.helpers import shutdown_ws
+from recipes.helpers import shutdown_ws, init_logstash, init_redis
 
 
 async def init_app(testing=False):
@@ -19,6 +19,7 @@ async def init_app(testing=False):
     app['websockets'] = {} # TODO do we actually need em?
 
     app['config'] = TEST_CONFIG if testing else CONFIG
+    app['testing'] = True if testing else False
 
     # setup Jinja2 template renderer
     aiohttp_jinja2.setup(
@@ -31,6 +32,11 @@ async def init_app(testing=False):
 
     app.on_cleanup.append(close_pg)
     app.on_cleanup.append(shutdown_ws)
+
+    if not testing:
+        pass
+        # app.cleanup_ctx.append(init_logstash)  # TODO uncomment
+        # app.cleanup_ctx.append(init_redis)
 
     # setup views and routes
     setup_routes(app)

@@ -18,6 +18,20 @@ services:
     env_file:
       - ./.env/.postgres
 
+  elk:
+    image: sebp/elk:latest
+    ports:
+      - "0.0.0.0:5601:5601"
+    env_file:
+      - ./.env/.elk
+    volumes:
+      - ./compose/elk/02-beats-input.conf:/etc/logstash/conf.d/02-beats-input.conf
+      - ./compose/elk/30-output.conf:/etc/logstash/conf.d/30-output.conf
+      - ./compose/elk/data:/var/lib/elasticsearch
+
+  redis:
+    image: redis:3.2
+
   caddy:
     build:
       context: .
