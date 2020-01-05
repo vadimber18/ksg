@@ -35,8 +35,8 @@ async def init_app(testing=False):
 
     if not testing:
         pass
-        # app.cleanup_ctx.append(init_logstash)  # TODO uncomment
-        # app.cleanup_ctx.append(init_redis)
+        # app.cleanup_ctx.append(init_logstash)  # TODO only with prod
+        app.cleanup_ctx.append(init_redis)
 
     # setup views and routes
     setup_routes(app)

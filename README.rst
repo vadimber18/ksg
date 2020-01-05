@@ -66,19 +66,14 @@ Installation
 
 TODO list
 ------------
-* maybe copy to src folder not to copy potentially big volumes?
-* aiologstash logs (w elk image)  # TODO
+* copy to src folder not to copy potentially big volumes?
 
-* custom exceptions  # TODO
-* collect for all users API - ordinary user can collect every N hours (last time stored in redis?) and superuser can do it always
-* redis (?)
-* permissions (superusers?)
-
-* raw sql
+* raw sql (one of select related?)
 * gitlab cron tests (mocks?)
-* files (upload commentary photos)
+* files (user avatar?) (upload commentary photos)
+* fileresponse - .txt description?
 * cron-tasks (emails?) (send weekly top for fav user activity categories)
-* load-balance
+* load-balance (?)
 * improve swagger (nullable, inher etc)
 * insomnia config
 * host

@@ -115,6 +115,22 @@ async def comment_recipe(request):
         return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
 
 
+@login_required
+async def collect(request):
+    ''' collect API handler '''
+    if not request.user.get('superuser'):
+        recently_collected = await request.app['redis'].exists('collected')
+        if recently_collected:
+            ttl = await request.app['redis'].ttl('collected')
+            log_string(request.app, 'collect request denied', extra={'user': request.user['id'], 'ttl': ttl})
+            return web.json_response({'message':'Collection cannot be performed', 'ttl': ttl},
+                                     status=web.HTTPForbidden.status_code)
+    log_string(request.app, 'collect successful request', extra={'user': request.user['id']})
+    await collect_recipes(request)
+    await request.app['redis'].set('collected', 'placeholder', expire = 60 * 60 * 6)  # 6 hours
+    return web.Response()
+
+
 @aiohttp_jinja2.template('recipes.html')
 async def recipes_nonapi(request):
     try:
@@ -167,6 +183,6 @@ async def recipe_detail_nonapi(request):
 
 
 @aiohttp_jinja2.template('collect.html')
-async def collect(request):
+async def collect_nonapi(request):
     await collect_recipes(request)
     return {}

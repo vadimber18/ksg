@@ -1,7 +1,7 @@
 import pathlib
 
-from .views import collect, recipes_nonapi, recipe_detail_nonapi
-from .views import register, login, recipes, favored, recipe_detail, vote_recipe, comment_recipe
+from .views import collect_nonapi, recipes_nonapi, recipe_detail_nonapi
+from .views import register, login, recipes, favored, recipe_detail, vote_recipe, comment_recipe, collect
 
 import aiohttp_cors
 
@@ -17,9 +17,10 @@ def setup_routes(app):
     app.router.add_route('GET', '/api/recipes/{recipe_id}', recipe_detail)
     app.router.add_route('POST', '/api/recipes/{recipe_id}/vote', vote_recipe)
     app.router.add_route('POST', '/api/recipes/{recipe_id}/comment', comment_recipe)
+    app.router.add_route('POST', '/api/recipes/collect', collect)
 
     # some basic views for collection and list of recipes view
-    app.router.add_get('/collect', collect, name='collect')
+    app.router.add_get('/collect', collect_nonapi, name='collect')
     app.router.add_get('/recipes', recipes_nonapi, name='recipes_nonapi')
     app.router.add_get('/recipes/{recipe_id}', recipe_detail_nonapi, name='recipe_detail_nonapi')
     #app.router.add_get('/', recipe_detail_nonapi, name='recipe_detail_nonapi')

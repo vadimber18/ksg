@@ -122,6 +122,8 @@ def log_exception(app, e):
 
 
 def log_string(app, string, extra=None):
+    if not app.get('logstash'):  # no elk w local config
+        return
     testing = app.get('testing')
     if not testing:
         app['logstash'].info(string, extra=extra)

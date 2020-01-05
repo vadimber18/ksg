@@ -23,7 +23,9 @@ services:
       - ./.env/.postgres
     ports:
       - "5431:5432"
-      # TODO
+
+  redis:
+    image: redis:3.2
 
   swagger:
     build:
