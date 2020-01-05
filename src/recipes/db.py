@@ -93,16 +93,25 @@ async def fetch_ingredients_for_recipes(conn, recipes):
 
 
 async def get_pure_ingredient_items_list(conn, recipes):
-    recipe_ids = [recipe['recipe_id'] for recipe in recipes]
-    query = sa.select([ingredient_item.c.recipe_id, ingredient_item.c.qty, ingredient.c.name]).\
-        select_from(
-        ingredient_item.join(ingredient, ingredient.c.id == ingredient_item.c.ingredient_id)
-    ).where(ingredient_item.c.recipe_id.in_(recipe_ids))
+    if recipes:
+        recipe_ids = str(tuple(recipe['recipe_id'] for recipe in recipes)).replace(',)', ')')
+        raw = f'''
+            select ii.recipe_id, ii.qty, ingr.name
+            from ingredient_item ii
+            join ingredient ingr
+              on ingr.id = ii.ingredient_id
+            where ii.recipe_id in {recipe_ids}
+            '''
+        # query = sa.select([ingredient_item.c.recipe_id, ingredient_item.c.qty, ingredient.c.name]).\
+        #     select_from(
+        #     ingredient_item.join(ingredient, ingredient.c.id == ingredient_item.c.ingredient_id)
+        # ).where(ingredient_item.c.recipe_id.in_(recipe_ids))
 
-    cursor = await conn.execute(query)
-    ingredient_item_records = await cursor.fetchall()
-    ingredient_items = [dict(q) for q in ingredient_item_records]
-    return ingredient_items
+        cursor = await conn.execute(raw)
+        ingredient_item_records = await cursor.fetchall()
+        ingredient_items = [dict(q) for q in ingredient_item_records]
+        return ingredient_items
+    return []
 
 
 async def get_pure_recipe_list(conn, limit, offset, where_list, usr, many, favored):
