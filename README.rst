@@ -66,8 +66,6 @@ Installation
 
 TODO list
 ------------
-* copy to src folder not to copy potentially big volumes?
-
 * raw sql (one of select related?)
 * gitlab cron tests (mocks?)
 * files (user avatar?) (upload commentary photos)
