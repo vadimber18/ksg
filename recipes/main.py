@@ -34,7 +34,6 @@ async def init_app(testing=False):
     app.on_cleanup.append(shutdown_ws)
 
     if not testing:
-        pass
         # app.cleanup_ctx.append(init_logstash)  # TODO only with prod
         app.cleanup_ctx.append(init_redis)
 

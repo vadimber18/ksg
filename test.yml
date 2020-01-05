@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  aio: &aio
+    build:
+      context: .
+      dockerfile: ./compose/aio/Dockerfile
+    image: recipes_local_aio
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env/.aio
+      - ./.env/.postgres
+    ports:
+      - "8000:8080"
+    environment:
+      DEBUG: 'true'
+    command: /start
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - ./.env/.postgres
+    ports:
+      - "5431:5432"
