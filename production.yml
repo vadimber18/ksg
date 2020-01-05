@@ -40,7 +40,7 @@ services:
     depends_on:
       - aio
     volumes:
-      - ./recipes/static:/var/www/static
+      - ./src/recipes/static:/var/www/static
     env_file:
       - ./.env/.caddy
     ports:

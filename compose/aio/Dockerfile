@@ -26,7 +26,7 @@ RUN sed -i 's/\r//' /start
 RUN chmod +x /start
 RUN chown aio /start
 
-COPY . /app
+COPY ./src /app
 
 RUN chown -R aio /app
 

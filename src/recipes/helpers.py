@@ -103,7 +103,6 @@ async def init_logstash(app):
     logger.setLevel(logging.INFO)
     await asyncio.sleep(60)  # wait elk container started
     try:
-        print(f'creating tcp handler on: {conf}')
         log_handler = await create_tcp_handler(conf['server'], conf['port'])
     except Exception as e:
         print('#'*20 + f'Cant connect to logstash: {e}')

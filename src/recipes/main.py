@@ -5,12 +5,12 @@ import aiohttp_jinja2
 import jinja2
 from aiohttp import web
 
-from recipes.db import close_pg, init_pg
-from recipes.middlewares import setup_middlewares
-from recipes.routes import setup_routes, setup_cors
-from recipes.settings import CONFIG, TEST_CONFIG
-from recipes.admin import setup_admin
-from recipes.helpers import shutdown_ws, init_logstash, init_redis
+from .db import close_pg, init_pg
+from .middlewares import setup_middlewares
+from .routes import setup_routes, setup_cors
+from .settings import CONFIG, TEST_CONFIG
+from .admin import setup_admin
+from .helpers import shutdown_ws, init_logstash, init_redis
 
 
 async def init_app(testing=False):
@@ -34,7 +34,7 @@ async def init_app(testing=False):
     app.on_cleanup.append(shutdown_ws)
 
     if not testing:
-        # app.cleanup_ctx.append(init_logstash)  # TODO only with prod
+        app.cleanup_ctx.append(init_logstash)  # TODO only with prod
         app.cleanup_ctx.append(init_redis)
 
     # setup views and routes

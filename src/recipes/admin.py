@@ -5,7 +5,7 @@ from aiohttp_admin.contrib import models, Schema
 from aiohttp_admin.backends.sa import PGResource
 from aiohttp_admin.security import DummyAuthPolicy, DummyTokenIdentityPolicy
 
-from recipes.db_tables import users, category, source, ingredient, ingredient_item, comment, vote
+from .db_tables import users, category, source, ingredient, ingredient_item, comment, vote
 
 
 schema = Schema()
