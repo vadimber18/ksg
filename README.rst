@@ -66,17 +66,16 @@ Installation
 
 TODO list
 ------------
-* find a way to launch logstash connection only in prod environment
-* gitlab cron tests (mocks?)
 * files (user avatar?) (upload commentary photos)
 * improve swagger (nullable, inher etc)
 * insomnia config
-* host
 * git things
+* gitlab cron tests (mocks?)
+* host
 
 * fileresponse - .txt description?
 * cron-tasks (emails?) (send weekly top for fav user activity categories)
 * load-balance (?)
 
-* cleanup
+* cleanup + readme
 

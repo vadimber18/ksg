@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 import logging
 import asyncio
 
@@ -101,7 +102,10 @@ async def init_logstash(app):
     log_handler = None
     logger = logging.getLogger('ksg')
     logger.setLevel(logging.INFO)
-    await asyncio.sleep(60)  # wait elk container started
+    # check if elk container is up - then wait logstash to start
+    elk_up = True if os.system(f'ping -c 1 {conf["server"]}') is 0 else False
+    if elk_up:
+        await asyncio.sleep(60)  # wait elk container started
     try:
         log_handler = await create_tcp_handler(conf['server'], conf['port'])
     except Exception as e:
