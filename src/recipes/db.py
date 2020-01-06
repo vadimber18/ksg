@@ -250,3 +250,33 @@ async def register(dbengine, data):
         user_record = await cursor.fetchone()
         if not user_record:
             raise RecordNotFound('There were an error with creating new user')
+
+
+async def set_userpic(dbengine, filename, user):
+    async with dbengine.acquire() as conn:
+        cursor = await conn.execute(
+            users.update()
+                .where(users.c.id == user['id'])
+                .values(userpic=filename)
+                .returning(users.c.id, users.c.userpic))
+        user_record = await cursor.fetchone()
+        cursor.close()
+
+        if not user_record:
+            raise RecordNotFound('Error while updating userpic')
+        return dict(user_record)
+
+
+async def user_by_id(dbengine, user_id):
+    raw = f'''
+        select u.id, u.username, u.email, u.superuser, u.userpic 
+        from users u
+        where u.id = {user_id}
+        '''
+
+    async with dbengine.acquire() as conn:
+        cursor = await conn.execute(raw)
+        user_record = await cursor.fetchone()
+        if not user_record:
+            raise RecordNotFound('Error while retrieve user record')
+        return dict(user_record)

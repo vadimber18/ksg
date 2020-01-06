@@ -34,7 +34,7 @@ async def init_app(testing=False):
     app.on_cleanup.append(shutdown_ws)
 
     if not testing:
-        app.cleanup_ctx.append(init_logstash)  
+        app.cleanup_ctx.append(init_logstash)
         app.cleanup_ctx.append(init_redis)
 
     # setup views and routes

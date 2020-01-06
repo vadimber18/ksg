@@ -2,11 +2,13 @@ from datetime import datetime, timedelta
 import os
 import logging
 import asyncio
+import imghdr
 
 import aioredis
 from aiologstash import create_tcp_handler
 
 from .db_tables import recipe
+from .exceptions import BadRequest_Important
 
 
 async def shutdown_ws(app):
@@ -142,3 +144,19 @@ async def init_redis(app):
     yield
     pool.close()
     await pool.wait_closed()
+
+
+async def run_sync(blocking_io, *args):
+    loop = asyncio._get_running_loop()
+    return await loop.run_in_executor(None, blocking_io, *args)
+
+
+def generate_userpic_filename(user, filename, path):
+    fullname = os.path.join(path, filename)
+    ext = imghdr.what(fullname)
+    if not ext:
+        os.remove(fullname)
+        raise BadRequest_Important('Uploaded file is not an image')
+    new_fullname = os.path.join(path, f'{user["id"]}.{ext}')
+    os.rename(fullname, new_fullname )
+    return new_fullname

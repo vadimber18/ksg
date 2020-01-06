@@ -13,6 +13,8 @@ services:
       - ./.env/.postgres
     ports:
       - "8000:8080"
+    volumes:
+      - ./uploads:/uploads
     environment:
       DEBUG: 'true'
     command: /start

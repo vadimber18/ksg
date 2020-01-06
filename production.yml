@@ -11,6 +11,8 @@ services:
     env_file:
       - ./.env/.aio
       - ./.env/.postgres
+    volumes:
+      - ./uploads:/uploads
     command: /start
 
   postgres:
@@ -41,6 +43,7 @@ services:
       - aio
     volumes:
       - ./src/recipes/static:/var/www/static
+      - ./uploads:/uploads
     env_file:
       - ./.env/.caddy
     ports:

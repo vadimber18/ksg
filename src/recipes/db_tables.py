@@ -14,7 +14,8 @@ users = Table(
     Column('username', String(64), nullable=False),
     Column('email', String(120), nullable=False, unique=True),
     Column('passwd', String(128), nullable=False),
-    Column('superuser', Boolean, default=False)
+    Column('superuser', Boolean, default=False),
+    Column('userpic', String(256), nullable=True)
 )
 
 source = Table(

@@ -1,3 +1,4 @@
+import os
 import aiohttp
 import aiohttp_jinja2
 from aiohttp import web
@@ -6,7 +7,8 @@ from scrape import collect_recipes
 
 from . import db
 from .exceptions import BadRequest_Important, AppException
-from .helpers import prepare_filter_parameters, prepare_recipes_response, log_string, log_exception
+from .helpers import prepare_filter_parameters, prepare_recipes_response, log_string, log_exception, \
+    generate_userpic_filename, run_sync
 from .utils import json_str_dumps, get_random_name
 from .middlewares import login_required # TODO find another location
 
@@ -131,6 +133,48 @@ async def collect(request):
     return web.Response()
 
 
+@login_required
+async def userpic_upload(request):
+    try:
+        reader = await request.multipart()
+
+        field = await reader.next()
+        assert field.name == 'file'
+        request_filename = field.filename
+        path = request.app['config']['upload_path']
+
+        with open(os.path.join(path, request_filename), 'wb') as f:
+            while True:
+                chunk = await field.read_chunk()  # 8192 bytes by default.
+                if not chunk:
+                    break
+                f.write(chunk)
+
+        filename = await run_sync(generate_userpic_filename, request.user, request_filename, path)
+        user = await db.set_userpic(request.app['db'], filename, request.user)
+
+        log_string(request.app, f'uploaded userpic', extra={'user': user['id']})
+        return web.json_response(user, dumps=json_str_dumps)
+
+    except BadRequest_Important as e:
+        log_string(request.app, f'userpic upload denied: {e}', extra={'user': request.user['id'],
+                                                             'request_filename': request_filename})
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
+    except Exception as e:
+        return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
+
+
+@login_required
+async def current_user(request):
+    ''' returns current logged user model '''
+    try:
+        user = await db.user_by_id(request.app['db'], request.user['id'])
+        return web.json_response(user)
+    except Exception as e:
+        return web.Response(body=str(e), status=web.HTTPBadRequest.status_code)
+
+
+# non-api handlers (do we need?)
 @aiohttp_jinja2.template('recipes.html')
 async def recipes_nonapi(request):
     try:

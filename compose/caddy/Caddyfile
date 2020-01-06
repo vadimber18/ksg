@@ -8,3 +8,9 @@
     errors stdout
     gzip
 }
+{$DOMAIN_NAME}:80/uploads {
+    root /uploads
+    log stdout
+    errors stdout
+    gzip
+}

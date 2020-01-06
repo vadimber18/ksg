@@ -66,9 +66,10 @@ Installation
 
 TODO list
 ------------
-* files (user avatar?) (upload commentary photos)
+* tests for current user
 * improve swagger (nullable, inher etc)
 * insomnia config
+
 * git things
 * gitlab cron tests (mocks?)
 * host

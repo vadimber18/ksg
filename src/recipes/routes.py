@@ -1,7 +1,8 @@
 import pathlib
 
 from .views import collect_nonapi, recipes_nonapi, recipe_detail_nonapi
-from .views import register, login, recipes, favored, recipe_detail, vote_recipe, comment_recipe, collect
+from .views import register, login, recipes, favored, recipe_detail, vote_recipe, comment_recipe, collect, \
+    current_user, userpic_upload
 
 import aiohttp_cors
 
@@ -12,6 +13,10 @@ def setup_routes(app):
     # api endpoints
     app.router.add_route('POST', '/api/register', register)
     app.router.add_route('POST', '/api/login', login)
+
+    app.router.add_route('GET', '/api/users/current', current_user)
+    app.router.add_route('POST', '/api/users/set_pic', userpic_upload)
+
     app.router.add_route('GET', '/api/recipes', recipes)
     app.router.add_route('GET', '/api/recipes/favored', favored)
     app.router.add_route('GET', '/api/recipes/{recipe_id}', recipe_detail)
@@ -47,3 +52,7 @@ def setup_static_routes(app):
     app.router.add_static('/static/',
                           path=f'{PROJECT_ROOT}/static',
                           name='static')
+
+    app.router.add_static('/uploads/',
+                          path=app['config']['upload_path'],
+                          name='uploads')

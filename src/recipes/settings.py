@@ -34,6 +34,7 @@ CONFIG = {
     },
     'host': os.environ.get('AIO_HOST', '127.0.0.1'),
     'port': int(os.environ.get('AIO_PORT', 8080)),
+    'upload_path': os.environ.get('UPLOAD_PATH', '/uploads/'),
     'debug': bool(os.environ.get('DEBUG', False)),
 }
 
@@ -58,5 +59,6 @@ TEST_CONFIG = {
     },
     'host': os.environ.get('AIO_HOST', '127.0.0.1'),
     'port': int(os.environ.get('AIO_PORT', 8080)),
+    'upload_path': os.environ.get('UPLOAD_PATH', '/uploads/'),
     'debug': bool(os.environ.get('DEBUG', False)),
 }
