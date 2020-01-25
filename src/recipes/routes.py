@@ -35,9 +35,10 @@ def setup_routes(app):
 
 
 def setup_cors(app):
+    SWAGGER_PORT = 8001 if app['config']['debug'] else 8000
     # swagger server
     cors = aiohttp_cors.setup(app, defaults={
-        "http://127.0.0.1:8000": aiohttp_cors.ResourceOptions(
+        f"http://127.0.0.1:{SWAGGER_PORT}": aiohttp_cors.ResourceOptions(
             allow_credentials=True,
             expose_headers="*",
             allow_headers="*",

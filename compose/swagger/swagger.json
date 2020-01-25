@@ -1,331 +1,371 @@
-swagger: "2.0"
+openapi: 3.0.0
 info:
-  version: "0.0.1"
-  title: "Recipes API"
-host: "127.0.0.1"
-basePath: "/api"
+  version: 0.0.1
+  title: Recipes API
+servers:
+  - url: http://127.0.0.1/api
+  - url: http://127.0.0.1:8000/api
+    description: for local build
 tags:
-- name: "auth"
-- name: "recipes"
-schemes:
-- "http"
+- name: auth
+- name: recipes
 paths:
   /register:
     post:
       tags:
-      - "auth"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
+      - auth
+      requestBody:
         required: true
-        schema:
-          $ref: "#/definitions/AuthRegister"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRegister'
       responses:
-        200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/SuccessTrue"
-      
+        201:
+          description: OK
+
   /login:
     post:
       tags:
-      - "auth"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
+      - auth
+      requestBody:
         required: true
-        schema:
-          $ref: "#/definitions/AuthLogin"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLogin'
       responses:
         200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/AuthLoginResponse"
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthLoginResponse'
 
   /recipes:
     get:
       tags:
-      - "recipes"
-      description: "Get recipe list"
-      produces:
-      - "application/json"
+      - recipes
+      description: Get recipe list
       parameters:
-      - in: "query"
-        name: "category"
-        type: "string"
-        description: "Fetch recipes with this category(or list of categories). Example: 1/1,2,3"
-      - in: "query"
-        name: "prep_time"
-        type: "string"
-        description: "Fetch recipes with prep_time minutes <= this. Example: 45"
-      - in: "query"
-        name: "from"
-        type: "string"
-        description: "Fetch recipes with pub_date >= this. Example: 2018-12-03"
-      - in: "query"
-        name: "to"
-        type: "string"
-        description: "Fetch recipes with pub_date <= this. Example: 2018-12-03"
-      - in: "query"
-        name: "limit"
-        type: "string"
-        description: "Number of results to return per page"
-      - in: "query"
-        name: "offset"
-        type: "string"
-        description: "The initial index from which to return the results"
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Fetch recipes with this category(or list of categories)
+        example: 1,2,3
+      - in: query
+        name: prep_time
+        schema:
+          type: string
+        description: Fetch recipes with prep_time minutes <= this
+        example: 45
+      - in: query
+        name: from
+        schema:
+          type: string
+        description: Fetch recipes with pub_date >= this
+        example: "12-03-2018"
+      - in: query
+        name: to
+        schema:
+          type: string
+        description: Fetch recipes with pub_date <= this
+        example: "12-03-2018"
+      - in: query
+        name: limit
+        schema:
+          type: string
+        description: Number of results to return per page
+      - in: query
+        name: offset
+        schema:
+          type: string
+        description: The initial index from which to return the results
       responses:
         200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/RecipeQuerySet"
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeQuerySet'
       security:
       - auth_token: []
-            
+
   /recipes/favored:
     get:
       tags:
-      - "recipes"
-      description: "Get list of liked recipes"
-      produces:
-      - "application/json"
+      - recipes
+      description: Get list of liked recipes
       parameters:
-      - in: "query"
-        name: "category"
-        type: "string"
-        description: "Fetch recipes with this category(or list of categories). Example: 1/1,2,3"
-      - in: "query"
-        name: "prep_time"
-        type: "string"
-        description: "Fetch recipes with prep_time minutes <= this. Example: 45"
-      - in: "query"
-        name: "from"
-        type: "string"
-        description: "Fetch recipes with pub_date >= this. Example: 2018-12-03"
-      - in: "query"
-        name: "to"
-        type: "string"
-        description: "Fetch recipes with pub_date <= this. Example: 2018-12-03"
-      - in: "query"
-        name: "limit"
-        type: "string"
-        description: "Number of results to return per page"
-      - in: "query"
-        name: "offset"
-        type: "string"
-        description: "The initial index from which to return the results"
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Fetch recipes with this category(or list of categories)
+        example: 1,2,3
+      - in: query
+        name: prep_time
+        schema:
+          type: string
+        description: Fetch recipes with prep_time minutes <= this
+        example: 45
+      - in: query
+        name: from
+        schema:
+          type: string
+        description: Fetch recipes with pub_date >= this
+        example: "12-03-2018"
+      - in: query
+        name: to
+        schema:
+          type: string
+        description: Fetch recipes with pub_date <= this
+        example: "12-03-2018"
+      - in: query
+        name: limit
+        schema:
+          type: string
+        description: Number of results to return per page
+      - in: query
+        name: offset
+        schema:
+          type: string
+        description: The initial index from which to return the results
       responses:
         200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/RecipeQuerySet"
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecipeQuerySet'
       security:
       - auth_token: []
-          
+
   /recipes/{recipe_id}:
     get:
       tags:
-      - "recipes"
-      description: "Get recipe by id or slug (slug passing through %recipe_id)"
-      produces:
-      - "application/json"
+      - recipes
+      description: Get recipe by id or slug (slug is passing through %recipe_id%)
       parameters:
-      - in: "path"
-        name: "recipe_id"
+      - in: path
+        name: recipe_id
         required: true
-        type: "integer"
+        schema:
+          oneOf:
+            - type: integer
+              example: 1
+            - type: string
+              example: molochniy-supchick
+
       responses:
         200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/Recipe"
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
       security:
       - auth_token: []
-            
+
   /recipes/{recipe_id}/vote:
     post:
       tags:
-      - "recipes"
-      description: "Vote for recipe. If vote.value is already True - makes it False"
-      produces:
-      - "application/json"
+      - recipes
+      description: Vote for recipe. If vote.value is already True - makes it False
       parameters:
-      - in: "path"
-        name: "recipe_id"
+      - in: path
+        name: recipe_id
         required: true
-        type: "integer"
+        schema:
+          type: integer
       responses:
-        200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/SuccessTrue"
+        201:
+          description: OK
       security:
       - auth_token: []
-            
+
   /recipes/{recipe_id}/comment:
     post:
       tags:
-      - "recipes"
-      description: "Comment for recipe"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+      - recipes
+      description: Comment for recipe
       parameters:
-      - in: "path"
-        name: "recipe_id"
-        required: true
-        type: "integer"
-      - in: "body"
-        name: "body"
+      - in: path
+        name: recipe_id
         required: true
         schema:
-          type: "object"
-          required:
-          - "body"
-          properties:
-            body:
-              type: "string"
-              example: "I like it! Cant wait to cook this!"
+          type: integer
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+              - body
+              properties:
+                body:
+                  type: string
+                  example: I like it! Cant wait to cook this!
       responses:
-        200:
-          description: "OK"
-          schema:
-            $ref: "#/definitions/SuccessTrue"
+        201:
+          description: OK
       security:
       - auth_token: []
-            
-securityDefinitions:
-  auth_token:
-    type: "apiKey"
-    name: "authorization_jwt"
-    description: "get this @ login"
-    in: "header"
-definitions:
-  RecipeQuerySet:
-    type: "object"
-    properties:
-      count:
-        type: "integer"
-        description: "count of all recipes with this filters (not considering pagination)"
-        example: 143
-      next:
-        type: "string"
-        description: "endpoint for next pagination page"
-        example: "http://example.com/api/recipes?limit=20&offset=60"
-      previous:
-        type: "string"
-        description: "endpoint for previous pagination page"
-        example: "http://example.com/api/recipes?limit=20&offset=20"
-      results:
-        type: "array"
-        items:
-          $ref: "#/definitions/Recipe"
-  Recipe:
-    type: "object"
-    properties:
-      recipe_id:
-        type: "integer"
-        example: 1
-      recipe_title:
-        type: "string"
-        example: "Молочный супчик"
-      recipe_slug:
-        type: "string"
-        example: "molochniy-supchick"
-      recipe_descr:
-        type: "string"
-        example: "Берем молоко, супчик, перемешиваем, греем 40 минут - готово!"
-      recipe_main_image:
-        type: "string"
-        example: "https://cs10.pikabu.ru/post_img/big/2018/01/15/7/1516011684151920835.jpg"
-      recipe_pub_date:
-        type: "string"
-        example: "2018-12-11"
-      source_id:
-        type: "integer"
-        example: 1
-      source_name:
-        type: "string"
-        example: "Edimdoma ru"
-      category_id:
-        type: "integer"
-        example: 1
-      caregory_name:
-        type: "string"
-        example: "Супы"
-      caregory_code:
-        type: "string"
-        example: "SOUPS"
-      likes:
-        type: "integer"
-        example: 5
-        description: "Count of positive votes/likes"
-      liked:
-        type: "boolean"
-        example: True
-        description: "Is user liked this recipe (if authorized)"
-      ingredients:
-        type: "array"
-        items:
-          $ref: "#/definitions/Ingredient"
-  Ingredient:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-        example: "Яйцо"
-      qty:
-        type: "string"
-        example: "1 штука"
-  SuccessTrue:
-    type: "object"
-    properties:
-      success: 
-        type: "boolean"
-        example: True
-  AuthRegister:
-    type: "object"
-    required:
-    - "username"
-    - "email"
-    - "password"
-    - "first_name"
-    - "last_name"
-    - "role"
-    properties:
-      username:
-        type: "string"
-        example: "ivan"
-      email:
-        type: "string"
-        example: "ivan@gmail.com"
-      password:
-        type: "string"
-        example: "qwerty"
-  AuthLogin:
-    type: "object"
-    required:
-    - "username"
-    - "password"
-    properties:
-      username:
-        type: "string"
-        example: "ivan"
-      password:
-        type: "string"
-        example: "qwerty"
-  AuthLoginResponse:
-    type: "object"
-    properties:
-      token:
-        type: "string"
-        example: "sometoken"
+
+  /users/current:
+    get:
+      tags:
+      - users
+      description: Get current user model
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      security:
+      - auth_token: []
+components:
+
+  securitySchemes:
+    auth_token:
+      type: apiKey
+      name: authorization_jwt
+      description: jwt token from /login endpoint
+      in: header
+  schemas:
+    RecipeQuerySet:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: count of all recipes with this filters (not considering pagination)
+          example: 143
+        next:
+          type: string
+          description: endpoint for next pagination page
+          example: http://example.com/api/recipes?limit=20&offset=60
+        previous:
+          type: string
+          description: endpoint for previous pagination page
+          example: http://example.com/api/recipes?limit=20&offset=20
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recipe'
+    Recipe:
+      type: object
+      properties:
+        recipe_id:
+          type: integer
+          example: 1
+        recipe_title:
+          type: string
+          example: Молочный супчик
+        recipe_slug:
+          type: string
+          example: molochniy-supchick
+        recipe_descr:
+          type: string
+          example: Берем молоко, супчик, перемешиваем, греем 40 минут - готово!
+        recipe_main_image:
+          type: string
+          example: https://cs10.pikabu.ru/post_img/big/2018/01/15/7/1516011684151920835.jpg
+        recipe_pub_date:
+          type: string
+          example: "2018-12-11"
+          nullable: true
+        source_id:
+          type: integer
+          example: 1
+        source_name:
+          type: string
+          example: Edimdoma ru
+        category_id:
+          type: integer
+          example: 1
+        caregory_name:
+          type: string
+          example: Супы
+        caregory_code:
+          type: string
+          example: SOUPS
+        likes:
+          type: integer
+          example: 5
+          description: Count of positive votes/likes
+        liked:
+          type: boolean
+          example: True
+          description: If user liked this recipe (if authorized)
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Ingredient'
+    Ingredient:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Яйцо
+        qty:
+          type: string
+          example: 1 штука
+    AuthRegister:
+      type: object
+      required:
+      - username
+      - email
+      - password
+      - first_name
+      - last_name
+      - role
+      properties:
+        username:
+          type: string
+          example: ivan
+        email:
+          type: string
+          example: ivan@gmail.com
+        password:
+          type: string
+          example: qwerty
+    AuthLogin:
+      type: object
+      required:
+      - username
+      - password
+      properties:
+        username:
+          type: string
+          example: ivan
+        password:
+          type: string
+          example: qwerty
+    AuthLoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: sometoken
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 123
+        username:
+          type: string
+          example: ivan
+        email:
+          type: string
+          example: ivan@gmail.com
+        superuser:
+          type: boolean
+          example: false
+        userpic:
+          type: string
+          example: /uploads/123.png
