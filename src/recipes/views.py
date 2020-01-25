@@ -91,7 +91,7 @@ async def vote_recipe(request):
     recipe_id = request.match_info['recipe_id']
     try:
         await db.vote_recipe(request.app['db'], recipe_id, request.user)
-        return web.json_response({'success': True})
+        return web.Response(status=web.HTTPCreated.status_code)
     except AppException as e:
         return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
     except Exception as e:
@@ -109,7 +109,7 @@ async def comment_recipe(request):
         log_string(request.app, 'new comment!', extra={'user': request.user['id'],
                                                        'recipe': recipe_id,
                                                        'body': data['body']})
-        return web.json_response({'success': True})
+        return web.Response(status=web.HTTPCreated.status_code)
     except AppException as e:
         return web.json_response(str(e), status=web.HTTPBadRequest.status_code)
     except Exception as e:
