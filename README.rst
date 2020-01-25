@@ -66,7 +66,6 @@ Installation
 
 TODO list
 ------------
-* improve swagger (nullable, inher etc)
 * insomnia config
 
 
