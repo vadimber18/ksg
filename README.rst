@@ -66,9 +66,6 @@ Installation
 
 TODO list
 ------------
-* insomnia config
-
-
 * git things
 * gitlab cron tests (mocks?)
 * host
