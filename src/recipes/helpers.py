@@ -81,7 +81,7 @@ def make_where_list_recipes(filters, many=True):
     else:
         category = filters.get('category')
         if category:
-            where_list.append(recipe.c.category_id.in_([int(cat) for cat in category.split()]))
+            where_list.append(recipe.c.category_id.in_([int(cat) for cat in category.split(',')]))
         prep_time = filters.get('prep_time')
         if prep_time:
             interval = timedelta(minutes=int(prep_time))
@@ -111,7 +111,7 @@ async def init_logstash(app):
     try:
         log_handler = await create_tcp_handler(conf['server'], conf['port'])
     except Exception as e:
-        print('#'*20 + f'Cant connect to logstash: {e}')
+        print(f'Cant connect to logstash: {e}')
     else:
         logger.addHandler(log_handler)
     app['logstash'] = logger
