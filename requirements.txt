@@ -17,6 +17,7 @@ faker
 pytest
 pytest-aiohttp
 flake8
+jsonschema
 
 # For scraping
 bs4==0.0.1

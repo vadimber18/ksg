@@ -66,17 +66,19 @@ Installation
 
 TODO list
 ------------
-* tests for current user
 * improve swagger (nullable, inher etc)
 * insomnia config
+
 
 * git things
 * gitlab cron tests (mocks?)
 * host
 
+
 * fileresponse - .txt description?
 * cron-tasks (emails?) (send weekly top for fav user activity categories)
 * load-balance (?)
+
 
 * cleanup + readme
 

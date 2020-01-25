@@ -31,3 +31,23 @@ def tables_and_data():
     sample_data()
     yield
     drop_tables()
+
+@pytest.fixture
+async def token(cli):
+    token = await get_token(cli)
+    yield token
+
+async def get_token(cli):
+    response = await cli.post(
+        '/api/register',
+        json={'username': 'test_user', 'password': 'qwerty', 'email': 'test@test.test'}
+    )
+    assert response.status == 201
+
+    response = await cli.post(
+        '/api/login',
+        json={'username': 'test_user', 'password': 'qwerty'}
+    )
+    assert response.status == 200
+    token = (await response.json())['token']
+    return token
