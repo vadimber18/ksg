@@ -9,4 +9,4 @@ run_prod:
 build_test:
 	docker-compose -f test.yml build
 test:
-	docker-compose -f test.yml run aio pytest tests
+	docker-compose -f test.yml run aio coverage run -m pytest tests

@@ -18,6 +18,7 @@ pytest
 pytest-aiohttp
 flake8
 jsonschema
+coverage
 
 # For scraping
 bs4==0.0.1
