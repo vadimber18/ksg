@@ -122,7 +122,7 @@ async def test_vote_recipe(cli, tables_and_data, token):
         '/api/recipes/340/vote',
         headers = {'authorization_jwt': token}
     )
-    assert response.status == 200
+    assert response.status == 201
     async with cli.server.app['db'].acquire() as conn:
         cursor = await conn.execute(vote.select()
                                     .where(vote.c.recipe_id==340)
@@ -135,7 +135,7 @@ async def test_vote_recipe(cli, tables_and_data, token):
         '/api/recipes/340/vote',
         headers = {'authorization_jwt': token}
     )
-    assert response.status == 200
+    assert response.status == 201
     async with cli.server.app['db'].acquire() as conn:
         cursor = await conn.execute(vote.select()
                                     .where(vote.c.recipe_id==340)
@@ -162,14 +162,14 @@ async def test_comment_recipe(cli, tables_and_data, token):
         '/api/recipes/348/comment',
         headers = {'authorization_jwt': token}
     )
-    assert response.status != 200 # no body
+    assert response.status != 201 # no body
 
     response = await cli.post(
         '/api/recipes/348/comment',
         headers = {'authorization_jwt': token},
         json={'body': 'Very bad recipe, I dont like it'}
     )
-    assert response.status == 200
+    assert response.status == 201
     async with cli.server.app['db'].acquire() as conn:
         cursor = await conn.execute(sa.select([sa.func.count()])
                                     .select_from(comment)
@@ -184,7 +184,7 @@ async def test_comment_recipe(cli, tables_and_data, token):
         headers = {'authorization_jwt': token},
         json={'body': 'I want to repeat - this recipe is awful! I hate it!'}
     )
-    assert response.status == 200
+    assert response.status == 201
     async with cli.server.app['db'].acquire() as conn:
         cursor = await conn.execute(sa.select([sa.func.count()])
                                     .select_from(comment)
@@ -322,7 +322,7 @@ async def test_recipes(cli, tables_and_data, token):
         '/api/recipes/340/vote',
         headers = {'authorization_jwt': token}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.get('/api/recipes?limit=140', headers = {'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
@@ -343,7 +343,7 @@ async def test_recipes(cli, tables_and_data, token):
         '/api/recipes/340/vote',
         headers = {'authorization_jwt': token}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.get('/api/recipes?limit=140', headers = {'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
@@ -364,7 +364,7 @@ async def test_recipes(cli, tables_and_data, token):
         headers = {'authorization_jwt': token},
         json={'body': 'I love this so much!'}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.get('/api/recipes?limit=140', headers = {'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
@@ -387,7 +387,7 @@ async def test_recipes(cli, tables_and_data, token):
         headers = {'authorization_jwt': token},
         json={'body': 'I love this so much![2]'}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.get('/api/recipes?limit=140', headers = {'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
@@ -425,7 +425,7 @@ async def test_favored(cli, tables_and_data, token):
             f'/api/recipes/{recipe_id}/vote',
             headers = {'authorization_jwt': token}
         )
-        assert response.status == 200
+        assert response.status == 201
     response = await cli.get('/api/recipes/favored', headers = {'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
@@ -438,7 +438,7 @@ async def test_favored(cli, tables_and_data, token):
         f'/api/recipes/340/vote',
         headers={'authorization_jwt': token}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.get('/api/recipes/favored', headers = {'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
@@ -475,7 +475,7 @@ async def test_recipe_detail(cli, tables_and_data, token):
         f'/api/recipes/340/vote',
         headers={'authorization_jwt': token}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.get('/api/recipes/340', headers = {'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
@@ -493,7 +493,7 @@ async def test_recipe_detail(cli, tables_and_data, token):
         f'/api/recipes/340/vote',
         headers={'authorization_jwt': token}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.get('/api/recipes/340')
     assert response.status == 200
     response_data = await response.json()
@@ -505,7 +505,7 @@ async def test_recipe_detail(cli, tables_and_data, token):
         json={'body': 'some comment'},
         headers={'authorization_jwt': token}
     )
-    assert response.status == 200
+    assert response.status == 201
     response = await cli.get('/api/recipes/340', headers = {'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
