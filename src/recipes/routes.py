@@ -1,7 +1,7 @@
 import pathlib
 
 from .views import collect_nonapi, recipes_nonapi, recipe_detail_nonapi
-from .views import register, login, recipes, favored, recipe_detail, vote_recipe, comment_recipe, collect, \
+from .api import register, login, recipes, favored, recipe_detail, vote_recipe, comment_recipe, collect, \
     current_user, userpic_upload
 
 import aiohttp_cors
