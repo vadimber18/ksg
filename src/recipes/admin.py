@@ -14,7 +14,7 @@ schema = Schema()
 def setup_admin(app, pg):
     admin = aiohttp_admin._setup(
         app,
-        title='Blog admin',
+        title='KSG admin',
         schema=schema,
         db=pg,
     )
