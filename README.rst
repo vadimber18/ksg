@@ -34,7 +34,7 @@ Each API handler processed by ``auth_middleware`` - simple jwt token implementat
 aiohttp-admin
 ^^^^^^^^^^^^^
 
-.. image:: https://user-images.githubusercontent.com/17683944/74587113-a1eadd00-4fff-11ea-88de-f328481c401a.gif
+.. image:: https://user-images.githubusercontent.com/17683944/74587363-80d7bb80-5002-11ea-8615-e2caa5150466.gif 
 
 swagger
 ^^^^^^^
@@ -49,7 +49,7 @@ App contains tests for API handlers using aiohttp-pytest. Some of them load data
 elk
 ^^^^^
 
-Likely, you'll have to run ``sudo sysctl -w vm.max_map_count=262144`` so that the elk container start normally. Kibana is available on 5601 port (on production build only)
+ELK is used to log and deal with non-standard exceptions. Kibana is available on 5601 port (on production build only). Likely, you'll have to run ``sudo sysctl -w vm.max_map_count=262144`` so that the elk container start normally
 
 
 Installation
