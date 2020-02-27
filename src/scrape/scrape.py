@@ -12,6 +12,7 @@ from . import db
 
 log = logging.getLogger(__name__)
 
+
 class RecipeUpdater:
 
     DEFAULT_PARSING_RULES = {
@@ -104,15 +105,15 @@ class RecipeUpdater:
             print('[{}/{}] Fetching recipes for {}...'.format(i + 1, len(links), self.SOURCE_NAME))
             try:
                 recipes.append(await parse_recipe_page(link, links[link], self.PARSING_RULES))
-            except Exception as e:
+            except Exception:
                 continue
 
         # asynchronously variation
-        #tasks = [parse_recipe_page(recipes, link, links[link], self.PARSING_RULES) for i, link in enumerate(links)]
-        #await asyncio.wait(tasks)
+        # tasks = [parse_recipe_page(recipes, link, links[link], self.PARSING_RULES) for i, link in enumerate(links)]
+        # await asyncio.wait(tasks)
 
         recipes = [entry for entry in recipes if entry['title'] is not None and entry['title'] != '']
-        print (len(recipes))
+        print(len(recipes))
         return recipes
 
     async def save_recipes(self, request, recipes):
@@ -127,7 +128,7 @@ class RecipeUpdater:
             try:
                 await asyncio.wait(tasks)
             except Exception as e:
-                print (e)
+                print(e)
             return result
 
 
@@ -144,12 +145,12 @@ async def process_module(request, module_name):
         except Exception as e:
             print(f'Error while processing {module_name}:')
             print(e)
-            #print(traceback.format_tb(e.__traceback__))
+            # print(traceback.format_tb(e.__traceback__))
             log.info(f'recipes module {module_name} finished with exception')
-            return -1 # exception
+            return -1  # exception
     else:
         log.info(f'recipes module {module_name} finished with SOURCE_DISABLED')
-        return -2 # source is disabled
+        return -2  # source is disabled
 
 
 async def collect_recipes(request):

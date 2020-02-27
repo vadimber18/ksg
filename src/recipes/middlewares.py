@@ -45,8 +45,9 @@ async def auth_middleware(request, handler):
         JWT_SECRET = request.app['config']['jwt']['secret']
         JWT_ALGORITHM = request.app['config']['jwt']['algo']
         try:
-            payload = jwt.decode(jwt_token, JWT_SECRET,
-                                    algorithms=[JWT_ALGORITHM])
+            payload = jwt.decode(jwt_token,
+                                 JWT_SECRET,
+                                 algorithms=[JWT_ALGORITHM])
         except (jwt.DecodeError, jwt.ExpiredSignatureError):
             return web.json_response({'message': 'Token is invalid'}, status=web.HTTPUnauthorized.status_code)
 

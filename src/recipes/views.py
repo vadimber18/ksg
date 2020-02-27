@@ -12,9 +12,9 @@ from .utils import get_random_name
 @aiohttp_jinja2.template('recipes.html')
 async def recipes_nonapi(request):
     try:
-        recipes, count = await db.get_recipe_list(request.app['db'], pagination={'limit':300}, filters=None)
+        recipes, count = await db.get_recipe_list(request.app['db'], pagination={'limit': 300}, filters=None)
         return {'recipes': recipes, 'count': count}
-    except Exception as e:
+    except Exception:
         return {'recipes': None, 'count': None}
 
 
@@ -29,7 +29,7 @@ async def recipe_detail_nonapi(request):
                                               filters=recipe_id,
                                               many=False)
             return aiohttp_jinja2.render_template('recipe_detail.html', request, {'recipe': recipe})
-        except Exception as e:
+        except Exception:
             return aiohttp_jinja2.render_template('recipe_detail.html', request, {'recipe': None})
 
     await ws_current.prepare(request)

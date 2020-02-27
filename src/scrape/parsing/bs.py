@@ -200,8 +200,8 @@ async def retrieve_recipes_links(rules):
                                   soup.select(selector)})
 
         # asynchronously variation
-        #tasks = [retrieve_page_links(links_page, timeout, selectors, links) for links_page in pages]
-        #await asyncio.wait(tasks)
+        # tasks = [retrieve_page_links(links_page, timeout, selectors, links) for links_page in pages]
+        # await asyncio.wait(tasks)
         return links
 
 

@@ -63,7 +63,7 @@ def prepare_recipes_response(recipes, count, rel_url):
         else:
             next_request = str(rel_url).replace(f'offset={offset}', f'offset={int(offset)+ 20}')
 
-    return {'count': count, 'next': next_request,'results': recipes}
+    return {'count': count, 'next': next_request, 'results': recipes}
 
 
 def make_where_list_recipes(filters, many=True):
@@ -73,10 +73,10 @@ def make_where_list_recipes(filters, many=True):
         return where_list
     elif not many:
         # detail view w id or slug
-        if filters.isdigit(): # recipe_id
-            where_list.append(recipe.c.id==filters) # we pass recipe_id through
+        if filters.isdigit():  # recipe_id
+            where_list.append(recipe.c.id == filters)  # we pass recipe_id through
         else:
-            where_list.append(recipe.c.slug==filters)
+            where_list.append(recipe.c.slug == filters)
         return where_list
     else:
         category = filters.get('category')
@@ -158,5 +158,5 @@ def generate_userpic_filename(user, filename, path):
         os.remove(fullname)
         raise BadRequest_Important('Uploaded file is not an image')
     new_fullname = os.path.join(path, f'{user["id"]}.{ext}')
-    os.rename(fullname, new_fullname )
+    os.rename(fullname, new_fullname)
     return new_fullname

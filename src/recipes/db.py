@@ -58,12 +58,12 @@ async def get_recipe_list(dbengine, pagination=None, filters=None, usr=None, man
 
 async def fetch_comments_for_recipes(conn, recipes):
     comments = await get_pure_comment_list(conn, recipes)
-    for recipe in recipes:
+    for _recipe in recipes:
         comment_list = []
-        for comment in comments:
-            if comment['recipe_id'] == recipe['recipe_id']:
-                comment_list.append(comment)
-        recipe.update({'comments': comment_list})
+        for _comment in comments:
+            if _comment['recipe_id'] == _recipe['recipe_id']:
+                comment_list.append(_comment)
+        _recipe.update({'comments': comment_list})
     return recipes
 
 
@@ -83,12 +83,12 @@ async def fetch_ingredients_for_recipes(conn, recipes):
     ''' selects related ingredient for ingredient_item '''
     ingredient_items = await get_pure_ingredient_items_list(conn, recipes)
     # adding ingredient_items to recipes
-    for recipe in recipes:
+    for _recipe in recipes:
         ingredient_item_list = []
-        for ingredient_item in ingredient_items:
-            if ingredient_item['recipe_id'] == recipe['recipe_id']:
-                ingredient_item_list.append(ingredient_item)
-        recipe.update({'ingredients': ingredient_item_list})
+        for _ingredient_item in ingredient_items:
+            if _ingredient_item['recipe_id'] == _recipe['recipe_id']:
+                ingredient_item_list.append(_ingredient_item)
+        _recipe.update({'ingredients': ingredient_item_list})
     return recipes
 
 
@@ -129,8 +129,14 @@ async def get_pure_recipe_list(conn, limit, offset, where_list, usr, many, favor
             select_from(
                 recipe.join(source, source.c.id == recipe.c.source_id)
                 .join(category, category.c.id == recipe.c.category_id)
-                .join(alias1, sa.and_(alias1.c.recipe_id == recipe.c.id, alias1.c.value == True), isouter=fetch_all_recipes)
-                .join(alias2, sa.and_(alias2.c.recipe_id == recipe.c.id, alias2.c.value == True, alias2.c.user_id == usr['id']), isouter=fetch_all_recipes)
+                .join(
+                    alias1,
+                    sa.and_(alias1.c.recipe_id == recipe.c.id, alias1.c.value == True),
+                    isouter=fetch_all_recipes)
+                .join(
+                    alias2,
+                    sa.and_(alias2.c.recipe_id == recipe.c.id, alias2.c.value == True, alias2.c.user_id == usr['id']),
+                    isouter=fetch_all_recipes)
             ).group_by(recipe.c.id, source.c.id, category.c.id, alias2.c.value)
     else:
         query = sa.select([recipe, source, category, sa.func.count(vote.c.recipe_id).label('likes')], use_labels=True).\
@@ -174,7 +180,6 @@ async def get_recipe_list_count(conn, where_list, favored=False, usr=None):
     cursor = await conn.execute(query)
     count_record = await cursor.fetchone()
     return count_record[0]
-
 
 
 async def comment_recipe(dbengine, data, recipe_id, user):

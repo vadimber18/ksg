@@ -75,7 +75,6 @@ def og_image(soup, fallback_value=None):
     return get_attribute_of_first_encountered_tag(soup, selectors, 'content', fallback_value)
 
 
-
 OG_DATETIME_FMT_WITH_SECONDS = '%Y-%m-%dT%H:%M:%S'
 OG_DATETIME_FMT_WITHOUT_SECONDS = '%Y-%m-%dT%H:%M'
 

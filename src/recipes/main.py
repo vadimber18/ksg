@@ -16,7 +16,7 @@ from .helpers import shutdown_ws, init_logstash, init_redis
 async def init_app(testing=False):
     app = web.Application()
 
-    app['websockets'] = {} # TODO do we actually need em?
+    app['websockets'] = {}  # TODO do we actually need em?
 
     app['config'] = TEST_CONFIG if testing else CONFIG
     app['testing'] = True if testing else False
@@ -26,7 +26,7 @@ async def init_app(testing=False):
         app, loader=jinja2.PackageLoader('recipes', 'templates'))
 
     # create db connection on startup, shutdown on exit
-    #app.on_startup.append(init_pg)
+    # app.on_startup.append(init_pg)
     pg = await init_pg(app)
     setup_admin(app, pg)
 

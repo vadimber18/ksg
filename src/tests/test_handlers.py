@@ -10,27 +10,27 @@ from jsonschema import validate
 async def test_register(cli, tables_and_data):
     response = await cli.post(
         '/api/register',
-        json={'username':'test_user', 'email': 'test@test.test'}
+        json={'username': 'test_user', 'email': 'test@test.test'}
     )
-    assert response.status == 400 # no password
+    assert response.status == 400  # no password
 
     response = await cli.post(
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty'}
     )
-    assert response.status == 400 # no email
+    assert response.status == 400  # no email
 
     response = await cli.post(
         '/api/register',
         json={'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 400 # no username
+    assert response.status == 400  # no username
 
     response = await cli.post(
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'testtest.test'}
     )
-    assert response.status == 400 # bad email format
+    assert response.status == 400  # bad email format
 
     response = await cli.post(
         '/api/register',
@@ -42,13 +42,13 @@ async def test_register(cli, tables_and_data):
         '/api/register',
         json={'username': 'test_user', 'password': 'qwerty', 'email': 'test_two@test.test'}
     )
-    assert response.status == 400 # user with this username already exists
+    assert response.status == 400  # user with this username already exists
 
     response = await cli.post(
         '/api/register',
         json={'username': 'test_user_two', 'password': 'qwerty', 'email': 'test@test.test'}
     )
-    assert response.status == 400 # user with this email already exists
+    assert response.status == 400  # user with this email already exists
 
     response = await cli.post(
         '/api/register',
@@ -62,19 +62,19 @@ async def test_login(cli, tables_and_data):
         '/api/login',
         json={'password': 'qwerty'}
     )
-    assert response.status == 400 # no username
+    assert response.status == 400  # no username
 
     response = await cli.post(
         '/api/login',
         json={'username': 'test_user'}
     )
-    assert response.status == 400 # no password
+    assert response.status == 400  # no password
 
     response = await cli.post(
         '/api/login',
         json={'username': 'test_user', 'password': 'qwerty'}
     )
-    assert response.status == 400 # no username in db
+    assert response.status == 400  # no username in db
 
     response = await cli.post(
         '/api/register',
@@ -86,7 +86,7 @@ async def test_login(cli, tables_and_data):
         '/api/login',
         json={'username': 'test_user', 'password': 'qwertyq'}
     )
-    assert response.status == 400 # bad password
+    assert response.status == 400  # bad password
 
     response = await cli.post(
         '/api/login',
@@ -100,11 +100,11 @@ async def test_current_user(cli, tables_and_data, token):
     response = await cli.get(
         '/api/users/current'
     )
-    assert response.status == 401 # no authorization
+    assert response.status == 401  # no authorization
 
     response = await cli.get(
         '/api/users/current',
-        headers = {'authorization_jwt': token}
+        headers={'authorization_jwt': token}
     )
     assert response.status == 200
     response_data = await response.json()
@@ -116,90 +116,85 @@ async def test_vote_recipe(cli, tables_and_data, token):
     response = await cli.post(
         '/api/recipes/340/vote'
     )
-    assert response.status == 401 # no authorization
+    assert response.status == 401  # no authorization
 
     response = await cli.post(
         '/api/recipes/340/vote',
-        headers = {'authorization_jwt': token}
+        headers={'authorization_jwt': token}
     )
     assert response.status == 201
     async with cli.server.app['db'].acquire() as conn:
         cursor = await conn.execute(vote.select()
-                                    .where(vote.c.recipe_id==340)
-                                    .where(vote.c.user_id==1))
+                                    .where(vote.c.recipe_id == 340)
+                                    .where(vote.c.user_id == 1))
         vote_record = await cursor.fetchone()
-        assert vote_record['value'] == True
-
+        assert vote_record['value'] is True
 
     response = await cli.post(
         '/api/recipes/340/vote',
-        headers = {'authorization_jwt': token}
+        headers={'authorization_jwt': token}
     )
     assert response.status == 201
     async with cli.server.app['db'].acquire() as conn:
         cursor = await conn.execute(vote.select()
-                                    .where(vote.c.recipe_id==340)
-                                    .where(vote.c.user_id==1))
+                                    .where(vote.c.recipe_id == 340)
+                                    .where(vote.c.user_id == 1))
         vote_record = await cursor.fetchone()
-        assert vote_record['value'] == False
-
+        assert vote_record['value'] is False
 
     response = await cli.post(
         '/api/recipes/1/vote',
-        headers = {'authorization_jwt': token}
+        headers={'authorization_jwt': token}
     )
-    assert response.status == 400 # bad recipe id
+    assert response.status == 400  # bad recipe id
 
 
 async def test_comment_recipe(cli, tables_and_data, token):
     response = await cli.post(
         '/api/recipes/348/comment'
     )
-    assert response.status == 401 #
-
+    assert response.status == 401  #
 
     response = await cli.post(
         '/api/recipes/348/comment',
-        headers = {'authorization_jwt': token}
+        headers={'authorization_jwt': token}
     )
-    assert response.status != 201 # no body
+    assert response.status != 201  # no body
 
     response = await cli.post(
         '/api/recipes/348/comment',
-        headers = {'authorization_jwt': token},
+        headers={'authorization_jwt': token},
         json={'body': 'Very bad recipe, I dont like it'}
     )
     assert response.status == 201
     async with cli.server.app['db'].acquire() as conn:
         cursor = await conn.execute(sa.select([sa.func.count()])
                                     .select_from(comment)
-                                        .where(comment.c.recipe_id==348)
-                                        .where(comment.c.user_id==1))
+                                        .where(comment.c.recipe_id == 348)
+                                        .where(comment.c.user_id == 1))
         count_record = await cursor.fetchone()
         assert count_record[0] == 1
 
-
     response = await cli.post(
         '/api/recipes/348/comment',
-        headers = {'authorization_jwt': token},
+        headers={'authorization_jwt': token},
         json={'body': 'I want to repeat - this recipe is awful! I hate it!'}
     )
     assert response.status == 201
     async with cli.server.app['db'].acquire() as conn:
         cursor = await conn.execute(sa.select([sa.func.count()])
                                     .select_from(comment)
-                                        .where(comment.c.recipe_id==348)
-                                        .where(comment.c.user_id==1))
+                                        .where(comment.c.recipe_id == 348)
+                                        .where(comment.c.user_id == 1))
         count_record = await cursor.fetchone()
         assert count_record[0] == 2
 
-
     response = await cli.post(
         '/api/recipes/1/comment',
-        headers = {'authorization_jwt': token},
+        headers={'authorization_jwt': token},
         json={'body': 'Some comment'}
     )
-    assert response.status == 400 # bad recipe id
+    assert response.status == 400  # bad recipe id
 
 
 async def test_recipes(cli, tables_and_data, token):
@@ -218,7 +213,7 @@ async def test_recipes(cli, tables_and_data, token):
     assert 'next' in response_data
     assert 'results' in response_data
     one_recipe = response_data['results'][0]
-    assert len(response_data['results']) == 20 # default limit
+    assert len(response_data['results']) == 20  # default limit
     assert response_data['next'] == '/api/recipes?offset=20'
     # checks fields in every recipe object
     for field in recipe_fields:
@@ -243,8 +238,8 @@ async def test_recipes(cli, tables_and_data, token):
     test_timedelta = timedelta(minutes=45)
     for one_recipe in response_data['results']:
         one_recipe_timedelta = timedelta(hours=int(one_recipe['recipe_prep_time'].split(':')[0]),
-                                        minutes=int(one_recipe['recipe_prep_time'].split(':')[0]),
-                                        seconds=int(one_recipe['recipe_prep_time'].split(':')[0]))
+                                         minutes=int(one_recipe['recipe_prep_time'].split(':')[0]),
+                                         seconds=int(one_recipe['recipe_prep_time'].split(':')[0]))
         assert one_recipe_timedelta <= test_timedelta
 
     response = await cli.get('/api/recipes?from=1-1-2008')
@@ -296,14 +291,14 @@ async def test_recipes(cli, tables_and_data, token):
     assert len(response_data['results']) <= 5
 
     # /w authorization
-    response = await cli.get('/api/recipes', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     assert 'count' in response_data
     assert 'next' in response_data
     assert 'results' in response_data
     one_recipe = response_data['results'][0]
-    assert len(response_data['results']) == 20 # default limit
+    assert len(response_data['results']) == 20  # default limit
     assert response_data['next'] == '/api/recipes?offset=20'
     for field in recipe_fields_authorized:
         assert field in one_recipe
@@ -315,21 +310,21 @@ async def test_recipes(cli, tables_and_data, token):
         assert count_record[0] == response_data['count']
 
     response = await cli.get('/api/recipes', headers = {'authorization_jwt': token[:-1]})
-    assert response.status == 401 # bad token
+    assert response.status == 401  # bad token
 
     # checks 'likes' incrementing and 'liked' field for user after voting
     response = await cli.post(
         '/api/recipes/340/vote',
-        headers = {'authorization_jwt': token}
+        headers={'authorization_jwt': token}
     )
     assert response.status == 201
-    response = await cli.get('/api/recipes?limit=140', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes?limit=140', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     for one_recipe in response_data['results']:
         if one_recipe['recipe_id'] == 340:
             assert one_recipe['likes'] == 1
-            assert one_recipe['liked'] == True
+            assert one_recipe['liked'] is True
 
     # checks 'likes' increment after voting
     response = await cli.get('/api/recipes?limit=140')
@@ -341,15 +336,15 @@ async def test_recipes(cli, tables_and_data, token):
 
     response = await cli.post(
         '/api/recipes/340/vote',
-        headers = {'authorization_jwt': token}
+        headers={'authorization_jwt': token}
     )
     assert response.status == 201
-    response = await cli.get('/api/recipes?limit=140', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes?limit=140', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     for one_recipe in response_data['results']:
         if one_recipe['recipe_id'] == 340:
-            assert one_recipe['liked'] != True
+            assert one_recipe['liked'] is not True
 
     response = await cli.get('/api/recipes?limit=140')
     assert response.status == 200
@@ -361,11 +356,11 @@ async def test_recipes(cli, tables_and_data, token):
     # checks 'comments' field after commenting
     response = await cli.post(
         '/api/recipes/348/comment',
-        headers = {'authorization_jwt': token},
+        headers={'authorization_jwt': token},
         json={'body': 'I love this so much!'}
     )
     assert response.status == 201
-    response = await cli.get('/api/recipes?limit=140', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes?limit=140', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     for one_recipe in response_data['results']:
@@ -384,11 +379,11 @@ async def test_recipes(cli, tables_and_data, token):
 
     response = await cli.post(
         '/api/recipes/348/comment',
-        headers = {'authorization_jwt': token},
+        headers={'authorization_jwt': token},
         json={'body': 'I love this so much![2]'}
     )
     assert response.status == 201
-    response = await cli.get('/api/recipes?limit=140', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes?limit=140', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     for one_recipe in response_data['results']:
@@ -409,29 +404,29 @@ async def test_recipes(cli, tables_and_data, token):
 
 async def test_favored(cli, tables_and_data, token):
     response = await cli.get('/api/recipes/favored')
-    assert response.status == 401 # no authorization
+    assert response.status == 401  # no authorization
 
-    response = await cli.get('/api/recipes/favored', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes/favored', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     assert 'count' in response_data
     assert 'next' in response_data
     assert 'results' in response_data
-    assert len(response_data['results']) == 0 # have no liked recipes yet
+    assert len(response_data['results']) == 0  # have no liked recipes yet
 
     # add 4 likes
     for recipe_id in [340, 348, 350, 470]:
         response = await cli.post(
             f'/api/recipes/{recipe_id}/vote',
-            headers = {'authorization_jwt': token}
+            headers={'authorization_jwt': token}
         )
         assert response.status == 201
-    response = await cli.get('/api/recipes/favored', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes/favored', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     assert len(response_data['results']) == 4
     for one_recipe in response_data['results']:
-        assert one_recipe['liked'] == True
+        assert one_recipe['liked'] is True
 
     # remove one like
     response = await cli.post(
@@ -439,7 +434,7 @@ async def test_favored(cli, tables_and_data, token):
         headers={'authorization_jwt': token}
     )
     assert response.status == 201
-    response = await cli.get('/api/recipes/favored', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes/favored', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     assert len(response_data['results']) == 3
@@ -461,10 +456,10 @@ async def test_recipe_detail(cli, tables_and_data, token):
         assert field in response_data
 
     response = await cli.get('/api/recipes/1')
-    assert response.status == 400 # bad recipe id
+    assert response.status == 400  # bad recipe id
 
     # /w authorization
-    response = await cli.get('/api/recipes/340', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes/340', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     for field in recipe_fields_authorized:
@@ -476,10 +471,10 @@ async def test_recipe_detail(cli, tables_and_data, token):
         headers={'authorization_jwt': token}
     )
     assert response.status == 201
-    response = await cli.get('/api/recipes/340', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes/340', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
-    assert response_data['liked'] == True
+    assert response_data['liked'] is True
     assert response_data['likes'] == 1
 
     # checks 'likes' incrementing after voting as unauthorized
@@ -506,7 +501,7 @@ async def test_recipe_detail(cli, tables_and_data, token):
         headers={'authorization_jwt': token}
     )
     assert response.status == 201
-    response = await cli.get('/api/recipes/340', headers = {'authorization_jwt': token})
+    response = await cli.get('/api/recipes/340', headers={'authorization_jwt': token})
     assert response.status == 200
     response_data = await response.json()
     assert len(response_data['comments']) == 1
@@ -516,3 +511,4 @@ async def test_recipe_detail(cli, tables_and_data, token):
     assert response.status == 200
     response_data = await response.json()
     assert len(response_data['comments']) == 1
+

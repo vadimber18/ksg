@@ -28,10 +28,11 @@ async def update_or_register_source(dbengine, name, url):
 
 async def get_recipe_by_url(dbengine, url):
     async with dbengine.acquire() as conn:
-        cursor = await conn.execute(recipes_db.recipe.select() \
+        cursor = await conn.execute(recipes_db.recipe.select()
                                     .where(recipes_db.recipe.c.url == url))
         recipe_record = await cursor.fetchone()
         return recipe_record
+
 
 async def get_all_sources(dbengine):
     async with dbengine.acquire() as conn:
@@ -45,19 +46,18 @@ async def save_recipe(dbengine, task_result, recipe, recipe_source):
     category_code = recipe['category']
 
     async with dbengine.acquire() as conn:
-        cursor = await conn.execute(recipes_db.category.select() \
+        cursor = await conn.execute(recipes_db.category.select()
                                     .where(recipes_db.category.c.code == category_code))
         record = await cursor.fetchone()
-        cursor.close() # or await? waiting a new release of aiopg anyways, they use sync .close()
+        cursor.close()  # or await? waiting a new release of aiopg anyways, they use sync .close()
         if not record:
             task_result.update({'exc_number': task_result['exc_number'] + 1})
             raise Exception('Couldnt get category from code specified in module')
         recipe['category'] = record['id']
 
-
         slug = slugify(recipe['title'])
         # append '-1', '-2' and so on if there are repeating slugs
-        cursor = await conn.execute(recipes_db.recipe.select() \
+        cursor = await conn.execute(recipes_db.recipe.select()
                                     .where(recipes_db.recipe.c.slug == slug))
         record = await cursor.fetchone()
         cursor.close()
@@ -66,7 +66,7 @@ async def save_recipe(dbengine, task_result, recipe, recipe_source):
             while record is not None:
                 suffix += 1
                 slug = f'{slug}-{str(suffix)}'
-                cursor = await conn.execute(recipes_db.recipe.select() \
+                cursor = await conn.execute(recipes_db.recipe.select()
                                     .where(recipes_db.recipe.c.slug == slug))
                 record = await cursor.fetchone()
                 cursor.close()
@@ -99,15 +99,15 @@ async def save_recipe(dbengine, task_result, recipe, recipe_source):
         try:
             await asyncio.wait(tasks)
         except Exception as e:
-            print (e)
+            print(e)
 
         task_result.update({'recipes_saved': task_result['recipes_saved'] + 1})
-        print ('recipe saved: ', record['slug'])
+        print('recipe saved: ', record['slug'])
 
 
 async def save_ingredient_item(dbengine, recipe_id, ingredient):
     async with dbengine.acquire() as conn:
-        cursor = await conn.execute(recipes_db.ingredient.select() \
+        cursor = await conn.execute(recipes_db.ingredient.select()
                                     .where(recipes_db.ingredient.c.name == ingredient[0]))
         record = await cursor.fetchone()
         cursor.close()
@@ -132,6 +132,7 @@ async def save_ingredient_item(dbengine, recipe_id, ingredient):
         cursor.close()
         if not record:
             raise Exception('Error while saving new ingredient_item')
+
 
 async def semaphored_function(semaphore, function, *func_args):
     async with semaphore:

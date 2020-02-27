@@ -9,7 +9,7 @@ from .utils import json_str_dumps
 from .exceptions import BadRequest_Important, AppException
 from .helpers import prepare_filter_parameters, prepare_recipes_response, log_string, log_exception, \
     generate_userpic_filename, run_sync
-from .middlewares import login_required # TODO find another location
+from .middlewares import login_required  # TODO find another location
 
 
 async def register(request):
@@ -124,11 +124,11 @@ async def collect(request):
         if recently_collected:
             ttl = await request.app['redis'].ttl('collected')
             log_string(request.app, 'collect request denied', extra={'user': request.user['id'], 'ttl': ttl})
-            return web.json_response({'message':'Collection cannot be performed', 'ttl': ttl},
+            return web.json_response({'message': 'Collection cannot be performed', 'ttl': ttl},
                                      status=web.HTTPForbidden.status_code)
     log_string(request.app, 'collect successful request', extra={'user': request.user['id']})
     await collect_recipes(request)
-    await request.app['redis'].set('collected', 'placeholder', expire = 60 * 60 * 6)  # 6 hours
+    await request.app['redis'].set('collected', 'placeholder', expire=60 * 60 * 6)  # 6 hours
     return web.Response()
 
 
